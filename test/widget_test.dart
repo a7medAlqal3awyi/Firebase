@@ -10,7 +10,7 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       MyApp(
-        router: AppRouter(),
+        appRouter: AppRouter(),
       ),
     );
 

@@ -1,4 +1,5 @@
 import 'package:fire_app/core/routing/routing.dart';
+import 'package:fire_app/features/home/ui/home_screen.dart';
 import 'package:fire_app/features/login/ui/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,10 @@ class AppRouter {
       case Routes.signupScreen:
         return MaterialPageRoute(
           builder: (_) => const SignupScreen(),
+        );
+      case Routes.homeScreen:
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
         );
       default:
         return MaterialPageRoute(

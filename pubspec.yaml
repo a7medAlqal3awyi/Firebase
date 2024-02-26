@@ -13,7 +13,7 @@ dependencies:
 #Flutter plugin for Firebase Core, enabling connecting to multiple Firebase apps.
   firebase_core: ^2.25.4
 #Flutter plugin for Firebase Auth, enabling authentication using passwords, phone numbers and identity providers like Google, Facebook and Twitter.
-  firebase_auth: ^4.2.9
+  firebase_auth: ^4.17.5
 #Flutter plugin for Cloud Firestore, a cloud-hosted, noSQL database with live synchronization and offline support on Android and iOS.
   cloud_firestore: ^4.15.5
   #Flutter plugin for Firebase Cloud Storage, a powerful, simple, and cost-effective object storage service for Android and iOS.
@@ -23,7 +23,8 @@ dependencies:
 #  Flutter plugin for Firebase Cloud Messaging, a cross-platform messaging solution that lets you reliably deliver messages on Android and iOS.
   firebase_messaging: ^14.7.16
 
-
+  # Flutter package to show beautiful dialogs(INFO,QUESTION,WARNING,SUCCESS,ERROR) with animations as simply as possible.
+  awesome_dialog: ^3.2.0
 
   flutter:
     sdk: flutter
