@@ -101,7 +101,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   verticalSpacing(20),
                   AppTextButton(
                     onPressed: () async {
-                      if (formKey.currentState!.validate()) {
+                       if (formKey.currentState!.validate()) {
                         try {
                           final credential = await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
