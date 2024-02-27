@@ -7,6 +7,8 @@ import 'package:fire_app/features/login/widgets/dont_have_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/routing/routing.dart';
 import '../../../core/widgets/app_text_button.dart';
@@ -25,13 +27,38 @@ class _LoginScreenState extends State<LoginScreen> {
 
   var formKey = GlobalKey<FormState>();
 
+  Future signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+
+    if (googleUser== null){
+      return;
+    }
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    context.pushNamedAndRemoveUntil(Routes.homeScreen,
+        predicate: (isRoute) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SingleChildScrollView(
             child: Form(
               key: formKey,
               child: Column(
@@ -80,28 +107,62 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   verticalSpacing(30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Forget Password?",
-                        style: TextStyles.font14darkBlueW500,
-                      ),
-                    ],
-                  ),
+              InkWell(
+                onTap: () async {
+                  if (emailController.text == "") {
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.error,
+                      animType: AnimType.rightSlide,
+                      title: 'Error',
+                      desc:
+                      "please enter your email.",
+                    ).show();
+                    return;
+                  }
+
+                  try {
+                    await FirebaseAuth.instance
+                        .sendPasswordResetEmail(email: emailController.text);
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.success,
+                      animType: AnimType.rightSlide,
+                      title: 'Success',
+                      desc:
+                      'Please checck your email to reset your password',
+                    ).show();
+                  } catch (e) {
+                    AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.error,
+                        animType: AnimType.rightSlide,
+                        title: 'Error',
+                        desc:
+                        "Something went wrong.Please try again.",)
+                        .show();
+                  }
+                },
+                child: Container(
+                  margin: EdgeInsets.all(8.w),
+                  alignment: AlignmentDirectional.centerEnd,
+                    child: Text("Forget Password",
+                    style: TextStyles.font14darkBlueW500,)),
+              ),
                   verticalSpacing(20),
                   AppTextButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         try {
-                          final credential = await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                                  email: emailController.text,
-                                  password: passwordController.text);
-                          if(credential.user!.emailVerified){
+                          final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
+
+                          if (credential.user!.emailVerified) {
                             FirebaseAuth.instance.currentUser!.sendEmailVerification();
                             context.pushReplacementNamed(Routes.homeScreen);
-                          }else{
+                          } else {
                             FirebaseAuth.instance.currentUser!.sendEmailVerification();
 
                             AwesomeDialog(
@@ -115,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'user-not-found') {
                             debugPrint('No user found for that email.');
+
                             if (context.mounted) {
                               AwesomeDialog(
                                 context: context,
@@ -123,32 +185,37 @@ class _LoginScreenState extends State<LoginScreen> {
                                 title: 'Failed',
                                 desc: 'No user found for that email',
                               ).show();
-                            } else if (e.code == 'wrong-password') {
-                              if (context.mounted) {
-                                AwesomeDialog(
-                                  context: context,
-                                  dialogType: DialogType.error,
-                                  animType: AnimType.topSlide,
-                                  title: 'Failed',
-                                  desc: 'Wrong password provided for that user',
-                                ).show();
-                              }
-                              debugPrint(
-                                  'Wrong password provided for that user.');
                             }
+                          } else if (e.code == 'wrong-password') {
+                            if (context.mounted) {
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.topSlide,
+                                title: 'Failed',
+                                desc: 'Wrong password provided for that user',
+                              ).show();
+                            }
+
+                            debugPrint('Wrong password provided for that user.');
                           }
                         }
                       } else {
                         debugPrint('Not valid user');
                       }
+
+
                     },
                     buttonText: 'Login',
                     buttonTextStyle: TextStyles.font16WhiteW600,
                   ),
                   verticalSpacing(20),
                   AppTextButton(
-                    backgroundColor: Colors.red,
-                    onPressed: () {},
+                    widget: SvgPicture.asset("assets/svgs/google.svg"),
+                    backgroundColor: Colors.blueGrey,
+                    onPressed: () {
+                      signInWithGoogle();
+                    },
                     buttonText: 'Login with Google',
                     buttonTextStyle: TextStyles.font16WhiteW600,
                   ),
