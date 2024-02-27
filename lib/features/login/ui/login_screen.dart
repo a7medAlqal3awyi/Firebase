@@ -7,6 +7,8 @@ import 'package:fire_app/features/login/widgets/dont_have_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/routing/routing.dart';
 import '../../../core/widgets/app_text_button.dart';
@@ -24,6 +26,31 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
+
+  Future signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+
+    if (googleUser== null){
+      return;
+    }
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    context.pushNamedAndRemoveUntil(Routes.homeScreen,
+        predicate: (isRoute) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,11 +125,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               .signInWithEmailAndPassword(
                                   email: emailController.text,
                                   password: passwordController.text);
-                          if(credential.user!.emailVerified){
-                            FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                          if (credential.user!.emailVerified) {
+                            FirebaseAuth.instance.currentUser!
+                                .sendEmailVerification();
                             context.pushReplacementNamed(Routes.homeScreen);
-                          }else{
-                            FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                          } else {
+                            FirebaseAuth.instance.currentUser!
+                                .sendEmailVerification();
 
                             AwesomeDialog(
                               context: context,
@@ -147,8 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   verticalSpacing(20),
                   AppTextButton(
-                    backgroundColor: Colors.red,
-                    onPressed: () {},
+                    widget: SvgPicture.asset("assets/svgs/google.svg"),
+                    backgroundColor: Colors.blueGrey,
+                    onPressed: () {
+                      signInWithGoogle();
+                    },
                     buttonText: 'Login with Google',
                     buttonTextStyle: TextStyles.font16WhiteW600,
                   ),
