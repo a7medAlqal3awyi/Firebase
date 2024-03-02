@@ -1,5 +1,7 @@
+import 'package:fire_app/core/helper/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../themeing/app_colors.dart';
 
@@ -13,18 +15,20 @@ class AppTextButton extends StatelessWidget {
   final double? horizontalPadding;
   final double? buttonWidth;
   final double? buttonHeight;
+  final Widget? widget;
 
   const AppTextButton(
       {super.key,
-        required this.onPressed,
-        this.backgroundColor,
-        required this.buttonText,
-        required this.buttonTextStyle,
-        this.borderRadius,
-        this.verticalPadding,
-        this.horizontalPadding,
-        this.buttonWidth,
-        this.buttonHeight});
+      required this.onPressed,
+      this.backgroundColor,
+      required this.buttonText,
+      required this.buttonTextStyle,
+      this.borderRadius,
+      this.verticalPadding,
+      this.horizontalPadding,
+      this.buttonWidth,
+      this.buttonHeight,
+      this.widget});
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +46,16 @@ class AppTextButton extends StatelessWidget {
           backgroundColor: MaterialStatePropertyAll(
               backgroundColor ?? ColorManager.primary)),
       onPressed: onPressed,
-      child: Text(
-        buttonText ,
-        style: buttonTextStyle ,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          widget?? const SizedBox(),
+            widget != null? horizontalSpacing(20): const SizedBox(),
+          Text(
+            buttonText,
+            style: buttonTextStyle,
+          ),
+        ],
       ),
     );
   }

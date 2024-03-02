@@ -16,16 +16,16 @@ import 'package:flutter/foundation.dart'
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb) {
-      return web;
-    }
+    // if (kIsWeb) {
+    //   return web;
+    // }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
-      case TargetPlatform.iOS:
-        return ios;
-      case TargetPlatform.macOS:
-        return macos;
+      // case TargetPlatform.iOS:
+      //   return ios;
+      // case TargetPlatform.macOS:
+      //   return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,38 +43,24 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAXX8wkLWnjcQpU_Fvbm-kzdM-ULrOy0sI',
-    appId: '1:749568293308:web:d4ca25aa3762a5ae69d3b9',
-    messagingSenderId: '749568293308',
-    projectId: 'finjan-e1dbb',
-    authDomain: 'finjan-e1dbb.firebaseapp.com',
-    storageBucket: 'finjan-e1dbb.appspot.com',
-  );
+  // static const FirebaseOptions web = FirebaseOptions(
+  //   apiKey: 'AIzaSyAXX8wkLWnjcQpU_Fvbm-kzdM-ULrOy0sI',
+  //   appId: '1:749568293308:web:d4ca25aa3762a5ae69d3b9',
+  //   messagingSenderId: '749568293308',
+  //   projectId: 'finjan-e1dbb',
+  //   authDomain: 'finjan-e1dbb.firebaseapp.com',
+  //   storageBucket: 'finjan-e1dbb.appspot.com',
+  // );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyABpeYo8CEKf6DDy_C9uEkPg-uIXMYblzM',
-    appId: '1:749568293308:android:b8ee2cbcf885122169d3b9',
-    messagingSenderId: '749568293308',
-    projectId: 'finjan-e1dbb',
-    storageBucket: 'finjan-e1dbb.appspot.com',
+    apiKey: 'AIzaSyC7FEucq7phUvhj8_aa87ub1bcBy8rDSbE',
+    appId: '1:851252640536:android:cdbc88d2e91acd9190fc6d',
+    messagingSenderId: '851252640536',
+    projectId: 'flutter-firebase-2fcfa',
+    storageBucket: 'flutter-firebase-2fcfa.appspot.com',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDz2dA_wZo_DEDAYCgoIZ7PYVhwUf3QJmk',
-    appId: '1:749568293308:ios:0a0ca916c8ef584669d3b9',
-    messagingSenderId: '749568293308',
-    projectId: 'finjan-e1dbb',
-    storageBucket: 'finjan-e1dbb.appspot.com',
-    iosBundleId: 'com.example.finjan',
-  );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDz2dA_wZo_DEDAYCgoIZ7PYVhwUf3QJmk',
-    appId: '1:749568293308:ios:77cba9e64882b59169d3b9',
-    messagingSenderId: '749568293308',
-    projectId: 'finjan-e1dbb',
-    storageBucket: 'finjan-e1dbb.appspot.com',
-    iosBundleId: 'com.example.finjan.RunnerTests',
-  );
+
+
 }
