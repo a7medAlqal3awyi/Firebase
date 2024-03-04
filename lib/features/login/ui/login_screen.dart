@@ -153,6 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ).show();
                                 }
                               } on FirebaseAuthException catch (e) {
+                                isLoading = false;
+                                setState(() {});
+
                                 if (e.code == 'user-not-found') {
                                   debugPrint('No user found for that email.');
                                   if (context.mounted) {

@@ -5,19 +5,22 @@ import 'package:fire_app/core/helper/spacing.dart';
 import 'package:fire_app/core/routing/routing.dart';
 import 'package:fire_app/core/widgets/app_text_button.dart';
 import 'package:fire_app/core/widgets/app_text_form_feild.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/themeing/styles.dart';
 
-class AddCategoryScreen extends StatefulWidget {
-  const AddCategoryScreen({super.key});
+class EditCategoryScreen extends StatefulWidget {
+  final String docId;
+  final String oldName;
+
+  const EditCategoryScreen(
+      {super.key, required this.docId, required this.oldName});
 
   @override
-  State<AddCategoryScreen> createState() => _AddCategoryScreenState();
+  State<EditCategoryScreen> createState() => _EditCategoryScreenState();
 }
 
-class _AddCategoryScreenState extends State<AddCategoryScreen> {
+class _EditCategoryScreenState extends State<EditCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     var formKey = GlobalKey<FormState>();
@@ -25,24 +28,19 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     TextEditingController controller = TextEditingController();
     CollectionReference categories =
         FirebaseFirestore.instance.collection('categories');
-    addCategory() async {
+    editCategory() async {
       if (formKey.currentState!.validate()) {
         try {
-          // Call the user's CollectionReference to add a new user
-          DocumentReference doc = await categories.add({
+          var response = await categories.doc(widget.docId).update({
             "category": controller.text,
-            "id": FirebaseAuth.instance.currentUser!.uid,
           });
           isLoading = true;
-          setState(() {});
           if (context.mounted) {
             context.pushNamedAndRemoveUntil(Routes.homeScreen,
                 predicate: (isRoute) => false);
           }
           print("successfully added");
         } catch (e) {
-          isLoading = true;
-          setState(() {});
           if (context.mounted) {
             AwesomeDialog(
               context: context,
@@ -58,13 +56,19 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     }
 
     @override
+    void initState() {
+      super.initState();
+      controller.text = widget.oldName;
+    }
+
+    @override
     void dispose() {
       super.dispose();
       controller.dispose();
     }
 
     return Scaffold(
-        appBar: AppBar(title: const Text("Add Category")),
+        appBar: AppBar(title: const Text("Edit Category")),
         body: Form(
           key: formKey,
           child: Padding(
@@ -75,16 +79,18 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     children: [
                       AppTextFormField(
                         controller: controller,
-                        hintText: "Add Category",
-                        validator: (va) {},
+                        hintText: widget.oldName,
+                        validator: (va) {
+                          if (va == "") return "Please,Enter valid text. ";
+                        },
                       ),
                       verticalSpacing(10),
                       AppTextButton(
                           buttonWidth: 100,
                           onPressed: () {
-                            addCategory();
+                            editCategory();
                           },
-                          buttonText: "Add",
+                          buttonText: "Edit",
                           buttonTextStyle: TextStyles.font16WhiteW600)
                     ],
                   ),
