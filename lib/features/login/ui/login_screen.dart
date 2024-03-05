@@ -112,15 +112,49 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         verticalSpacing(30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              "Forget Password?",
-                              style: TextStyles.font14darkBlueW500,
-                            ),
-                          ],
+                        InkWell(
+                          onTap: () async {
+                            if (emailController.text == "") {
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                title: 'Error',
+                                desc:
+                                "please enter your email.",
+                              ).show();
+                              return;
+                            }
+
+                            try {
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(email: emailController.text);
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.success,
+                                animType: AnimType.rightSlide,
+                                title: 'Success',
+                                desc:
+                                'Please checck your email to reset your password',
+                              ).show();
+                            } catch (e) {
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                title: 'Error',
+                                desc:
+                                "Something went wrong.Please try again.",)
+                                  .show();
+                            }
+                          },
+                          child: Container(
+                              margin: EdgeInsets.all(8.w),
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: Text("Forget Password",
+                                style: TextStyles.font14darkBlueW500,)),
                         ),
+
                         verticalSpacing(20),
                         AppTextButton(
                           onPressed: () async {
