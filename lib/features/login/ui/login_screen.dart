@@ -26,13 +26,13 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   Future signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-
-    if (googleUser== null){
+    if (googleUser == null) {
       return;
     }
 
@@ -56,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+<<<<<<< HEAD
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
@@ -178,13 +179,76 @@ class _LoginScreenState extends State<LoginScreen> {
                             debugPrint('No user found for that email.');
 
                             if (context.mounted) {
+=======
+        child: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : SingleChildScrollView(
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.w),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Welcome Back",
+                          style: TextStyles.font24BlueW700,
+                        ),
+                        verticalSpacing(8),
+                        Text(
+                          "We're excited to have you back, can't wait to see what you've been up to since you last logged in.",
+                          style: TextStyles.font14GreyW400,
+                        ),
+                        verticalSpacing(30),
+                        AppTextFormField(
+                          controller: emailController,
+                          hintText: "Email",
+                          validator: (val) {
+                            if (val == "") {
+                              return 'Please enter a valid email ';
+                            }
+                          },
+                        ),
+                        verticalSpacing(30),
+                        AppTextFormField(
+                          validator: (val) {
+                            if (val == "") {
+                              return 'Please enter a valid password ';
+                            }
+                          },
+                          controller: passwordController,
+                          hintText: "Password",
+                          isSecureText: isObsecure,
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isObsecure = !isObsecure;
+                              });
+                            },
+                            icon: Icon(
+                              isObsecure
+                                  ? Icons.remove_red_eye
+                                  : Icons.visibility_off,
+                            ),
+                          ),
+                        ),
+                        verticalSpacing(30),
+                        InkWell(
+                          onTap: () async {
+                            if (emailController.text == "") {
+>>>>>>> development
                               AwesomeDialog(
                                 context: context,
                                 dialogType: DialogType.error,
-                                animType: AnimType.topSlide,
-                                title: 'Failed',
-                                desc: 'No user found for that email',
+                                animType: AnimType.rightSlide,
+                                title: 'Error',
+                                desc:
+                                "please enter your email.",
                               ).show();
+<<<<<<< HEAD
                             }
                           } else if (e.code == 'wrong-password') {
                             if (context.mounted) {
@@ -208,24 +272,129 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     buttonText: 'Login',
                     buttonTextStyle: TextStyles.font16WhiteW600,
+=======
+                              return;
+                            }
+
+                            try {
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(email: emailController.text);
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.success,
+                                animType: AnimType.rightSlide,
+                                title: 'Success',
+                                desc:
+                                'Please checck your email to reset your password',
+                              ).show();
+                            } catch (e) {
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                title: 'Error',
+                                desc:
+                                "Something went wrong.Please try again.",)
+                                  .show();
+                            }
+                          },
+                          child: Container(
+                              margin: EdgeInsets.all(8.w),
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: Text("Forget Password",
+                                style: TextStyles.font14darkBlueW500,)),
+                        ),
+
+                        verticalSpacing(20),
+                        AppTextButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              try {
+                                isLoading = true;
+                                setState(() {});
+                                final credential = await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                        email: emailController.text,
+                                        password: passwordController.text);
+                                isLoading = false;
+                                setState(() {});
+
+                                if (credential.user!.emailVerified) {
+                                  FirebaseAuth.instance.currentUser!
+                                      .sendEmailVerification();
+                                  context
+                                      .pushReplacementNamed(Routes.homeScreen);
+                                } else {
+                                  FirebaseAuth.instance.currentUser!
+                                      .sendEmailVerification();
+
+                                  AwesomeDialog(
+                                    context: context,
+                                    dialogType: DialogType.info,
+                                    animType: AnimType.topSlide,
+                                    title: 'Failed',
+                                    desc: 'Please verify your email first',
+                                  ).show();
+                                }
+                              } on FirebaseAuthException catch (e) {
+                                isLoading = false;
+                                setState(() {});
+
+                                if (e.code == 'user-not-found') {
+                                  debugPrint('No user found for that email.');
+                                  if (context.mounted) {
+                                    AwesomeDialog(
+                                      context: context,
+                                      dialogType: DialogType.error,
+                                      animType: AnimType.topSlide,
+                                      title: 'Failed',
+                                      desc: 'No user found for that email',
+                                    ).show();
+                                  } else if (e.code == 'wrong-password') {
+                                    if (context.mounted) {
+                                      AwesomeDialog(
+                                        context: context,
+                                        dialogType: DialogType.error,
+                                        animType: AnimType.topSlide,
+                                        title: 'Failed',
+                                        desc:
+                                            'Wrong password provided for that user',
+                                      ).show();
+                                    }
+                                    debugPrint(
+                                        'Wrong password provided for that user.');
+                                  }
+                                }
+                              }
+                            } else {
+                              debugPrint('Not valid user');
+                            }
+                          },
+                          buttonText: 'Login',
+                          buttonTextStyle: TextStyles.font16WhiteW600,
+                        ),
+                        verticalSpacing(20),
+                        AppTextButton(
+                          widget: SvgPicture.asset("assets/svgs/google.svg"),
+                          backgroundColor: Colors.blueGrey,
+                          onPressed: () {
+                            isLoading = true;
+                            setState(() {});
+                            signInWithGoogle();
+                            isLoading = false;
+                            setState(() {});
+                          },
+                          buttonText: 'Login with Google',
+                          buttonTextStyle: TextStyles.font16WhiteW600,
+                        ),
+                        verticalSpacing(20),
+                        const DontHaveAnAccount()
+                      ],
+                    ),
+>>>>>>> development
                   ),
-                  verticalSpacing(20),
-                  AppTextButton(
-                    widget: SvgPicture.asset("assets/svgs/google.svg"),
-                    backgroundColor: Colors.blueGrey,
-                    onPressed: () {
-                      signInWithGoogle();
-                    },
-                    buttonText: 'Login with Google',
-                    buttonTextStyle: TextStyles.font16WhiteW600,
-                  ),
-                  verticalSpacing(20),
-                  const DontHaveAnAccount()
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
