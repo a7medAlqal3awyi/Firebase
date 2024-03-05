@@ -1,48 +1,57 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fire_app/core/helper/exetention.dart';
 import 'package:fire_app/core/helper/spacing.dart';
-import 'package:fire_app/core/routing/routing.dart';
 import 'package:fire_app/core/widgets/app_text_button.dart';
 import 'package:fire_app/core/widgets/app_text_form_feild.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fire_app/features/note/note_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/themeing/styles.dart';
 
-class AddCategoryScreen extends StatefulWidget {
-  const AddCategoryScreen({super.key});
+class EditNoteScreen extends StatefulWidget {
+  final String noteId;
+  final String value;
+  final String categoriesNoteId;
+
+  const EditNoteScreen(
+      {super.key,
+      required this.noteId,
+      required this.categoriesNoteId,
+      required this.value});
 
   @override
-  State<AddCategoryScreen> createState() => _AddCategoryScreenState();
+  State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
-class _AddCategoryScreenState extends State<AddCategoryScreen> {
+class _EditNoteScreenState extends State<EditNoteScreen> {
   @override
   Widget build(BuildContext context) {
     var formKey = GlobalKey<FormState>();
     bool isLoading = false;
     TextEditingController controller = TextEditingController();
-    CollectionReference categories =
-        FirebaseFirestore.instance.collection('categories');
-    addCategory() async {
+
+    editNote() async {
+      CollectionReference categories = FirebaseFirestore.instance
+          .collection('categories')
+          .doc(widget.categoriesNoteId)
+          .collection('note');
+      print("*****************************widget.noteId");
+      print(widget.noteId);
       if (formKey.currentState!.validate()) {
         try {
-          // Call the user's CollectionReference to add a new user
-          DocumentReference doc = await categories.add({
-            "category": controller.text,
-            "id": FirebaseAuth.instance.currentUser!.uid,
+          isLoading = true;
+          setState(() {});
+          await categories.doc(widget.noteId).update({
+            "note": controller.text,
           });
           isLoading = true;
-          setState(() {});
-          if (context.mounted) {
-            context.pushNamedAndRemoveUntil(Routes.homeScreen,
-                predicate: (isRoute) => false);
-          }
           print("successfully added");
+          if (context.mounted) {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) =>
+                    NoteScreen(categoryId: widget.categoriesNoteId)));
+          }
         } catch (e) {
-          isLoading = true;
-          setState(() {});
           if (context.mounted) {
             AwesomeDialog(
               context: context,
@@ -63,8 +72,14 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
       controller.dispose();
     }
 
+    @override
+    void initState() {
+      super.initState();
+      controller.text = widget.value;
+    }
+
     return Scaffold(
-        appBar: AppBar(title: const Text("Add Folder")),
+        appBar: AppBar(title: const Text("Edit Note")),
         body: Form(
           key: formKey,
           child: Padding(
@@ -75,22 +90,21 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     children: [
                       AppTextFormField(
                         controller: controller,
-                        hintText: "Add Folder",
-                        validator: (va) {
-                          if (va!.isEmpty) {
-                            return "Enter Folder";
-                          }
-                          return null;
-                        },
+                        hintText: widget.value,
+                          validator: (va) {
+                            if (va!.isEmpty) {
+                              return "Please Enter Note";
+                            }
+                            return null;
+                          },
                       ),
                       verticalSpacing(10),
                       AppTextButton(
-                          buttonWidth: 140,
-                          buttonHeight: 60,
+                          buttonWidth: 100,
                           onPressed: () {
-                            addCategory();
+                            editNote();
                           },
-                          buttonText: "Create Folder",
+                          buttonText: "Edit",
                           buttonTextStyle: TextStyles.font16WhiteW600)
                     ],
                   ),

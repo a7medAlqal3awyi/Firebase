@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/routing/routing.dart';
 import '../../edit_category/edit_category_screen.dart';
+import '../../note/note_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,6 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 : GridView.builder(
                     itemBuilder: (context, index) {
                       return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => NoteScreen(
+                              categoryId: data[index].id,
+                            ),
+                          ));
+                        },
                         onLongPress: () {
                           AwesomeDialog(
                             context: context,

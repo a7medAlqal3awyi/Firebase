@@ -25,6 +25,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const AddCategoryScreen(),
         );
+
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
