@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/routing/routing.dart';
 import '../../edit_category/edit_category_screen.dart';
+import '../../note/note_screen.dart';
 
 <<<<<<< HEAD
 
@@ -101,6 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 : GridView.builder(
                     itemBuilder: (context, index) {
                       return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => NoteScreen(
+                              categoryId: data[index].id,
+                            ),
+                          ));
+                        },
                         onLongPress: () {
                           AwesomeDialog(
                             context: context,

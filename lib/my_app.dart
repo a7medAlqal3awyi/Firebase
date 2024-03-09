@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   AppRouter get appRouter => widget.appRouter;
+
   @override
   void initState() {
     super.initState();
