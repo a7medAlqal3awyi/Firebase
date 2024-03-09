@@ -2,6 +2,7 @@ import 'package:fire_app/core/routing/routing.dart';
 import 'package:fire_app/features/add_category/add_category_screen.dart';
 import 'package:fire_app/features/home/ui/home_screen.dart';
 import 'package:fire_app/features/login/ui/login_screen.dart';
+import 'package:fire_app/user.dart';
 import 'package:flutter/material.dart';
 
 import '../../features/signup/ui/signup_screen.dart';
@@ -25,7 +26,10 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const AddCategoryScreen(),
         );
-
+      case Routes.usersScreen:
+        return MaterialPageRoute(
+          builder: (_) => const UserScreen(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
