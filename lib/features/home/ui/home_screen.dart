@@ -1,10 +1,13 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fire_app/core/helper/exetention.dart';
+import 'package:fire_app/features/note/add_note_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/routing/routing.dart';
+import '../../../core/themeing/styles.dart';
+import '../../../core/widgets/app_text_button.dart';
 import '../../edit_category/edit_category_screen.dart';
 import '../../note/note_screen.dart';
 

@@ -4,6 +4,7 @@ import 'package:fire_app/core/helper/exetention.dart';
 import 'package:fire_app/features/note/add_note_screen.dart';
 import 'package:fire_app/features/note/edit_note.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -96,10 +97,21 @@ class _NoteScreenState extends State<NoteScreen> {
                               btnOkOnPress: () async {
                                 await FirebaseFirestore.instance
                                     .collection('categories')
+                                    .doc(widget.categoryId)
+                                    .collection('note')
                                     .doc(data[index].id)
                                     .delete();
-                                data.removeAt(index);
-                                setState(() {});
+
+                                if (data[index]['url'] != "none") {
+                                  await FirebaseStorage.instance
+                                      .refFromURL(data[index]['url'])
+                                      .delete();
+                                }
+                                Navigator.of(context as BuildContext)
+                                    .push(MaterialPageRoute(builder: (context) {
+                                  return NoteScreen(
+                                      categoryId: widget.categoryId);
+                                }));
                               },
                             ).show();
                           },
@@ -121,14 +133,24 @@ class _NoteScreenState extends State<NoteScreen> {
                             ),
                             child: Card(
                               borderOnForeground: true,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(data[index]['note'].toString()),
-                                  ],
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(data[index]['note'].toString()),
+                                  if (data[index]['url'] != "none")
+                                    Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Image.network(
+                                        data[index]['url'],
+                                        height: 160,
+                                        width: 160,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ),
